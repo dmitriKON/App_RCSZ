@@ -47,6 +47,12 @@ public class MyHttpServer {
             String path = exchange.getRequestURI().getPath();
             String method = exchange.getRequestMethod();
 
+            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+            if (method.equalsIgnoreCase("OPTIONS")) {
+                exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+                exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type,Authorization");
+                exchange.sendResponseHeaders(204, -1);
+            }
             if (path.startsWith("/api/good")) {
                 String[] splitted_path = path.split("/");
                 String goods_name = "";
@@ -62,10 +68,10 @@ public class MyHttpServer {
                     switch (method) {
                         case "GET":
                             if(goods_name == "all"){
-                                send_response(goods_service.get_all_products().toString(), 200, exchange);
+                                send_response(goods_service.get_all_products().toJSONString(), 200, exchange);
                             }
                             else if (goods_name != "") {
-                                send_response(goods_service.get_product_by_name(goods_name).toString(), 200, exchange);
+                                send_response(goods_service.get_product_by_name(goods_name).toJSONString(), 200, exchange);
                             } else {
                                 send_response("404: Resource not found", 404, exchange);
                             }
@@ -79,7 +85,7 @@ public class MyHttpServer {
                                 return;
                             }
                             JSONObject goods_id = goods_service.create_new_product(goods);
-                            send_response(goods_id.toString(), 201, exchange);
+                            send_response(goods_id.toJSONString(), 201, exchange);
                             return;
                         case "POST":
                             if (goods_name == "") {
@@ -122,7 +128,9 @@ public class MyHttpServer {
                     if (verified) {
                         String jwt = JWT.createJWT((String) user_json.get("username"));
                         exchange.getResponseHeaders().add("Authorization", "Bearer " + jwt);
-                        send_response("{\"jwt\" : " + jwt + " }", 200, exchange);
+                        JSONObject jwt_json = new JSONObject();
+                        jwt_json.put("jwt", jwt);
+                        send_response(jwt_json.toJSONString(), 200, exchange);
                     } else {
                         send_response("401: Unauthorized - authentication failed", 401, exchange);
                     }
@@ -149,7 +157,7 @@ public class MyHttpServer {
                     switch (method) {
                         case "GET":
                             if (group_name != "") {
-                                send_response(group_service.get_group_by_name(group_name).toString(), 200, exchange);
+                                send_response(group_service.get_group_by_name(group_name).toJSONString(), 200, exchange);
                             } else {
                                 send_response("404: Resource not found", 404, exchange);
                             }
@@ -163,7 +171,7 @@ public class MyHttpServer {
                                 return;
                             }
                             JSONObject group_id = group_service.create_new_group(group);
-                            send_response(group_id.toString(), 201, exchange);
+                            send_response(group_id.toJSONString(), 201, exchange);
                             return;
                         case "POST":
                             if (group_name == "") {
@@ -212,15 +220,15 @@ public class MyHttpServer {
                 case "PUT":
                     if (
                             goods.containsKey("name") &&
-                                    goods.containsKey("group_name") &&
-                                    goods.containsKey("amount") &&
-                                    goods.containsKey("price") &&
-                                    goods.containsKey("about") &&
-                                    goods.containsKey("producer") &&
-                                    (!goods.get("group_name").equals("")) &&
-                                    ((long) goods.get("amount") >= 0) &&
-                                    ((double) goods.get("price") > 0) &&
-                                    (!goods.get("producer").equals(""))
+                            goods.containsKey("group_name") &&
+                            goods.containsKey("amount") &&
+                            goods.containsKey("price") &&
+                            goods.containsKey("about") &&
+                            goods.containsKey("producer") &&
+                            (!goods.get("group_name").equals("")) &&
+                            ((long) goods.get("amount") >= 0) &&
+                            ((double) goods.get("price") > 0) &&
+                            (!goods.get("producer").equals(""))
                     )
                     {
                         return true;
