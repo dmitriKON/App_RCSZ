@@ -1,5 +1,6 @@
 package backend;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.sql.SQLException;
@@ -14,7 +15,6 @@ public class GoodsService {
 
     public JSONObject get_product_by_name(String name) {
         List<Goods> goods = db.get_products_where("name", name);
-        System.out.println(goods);
         JSONObject goods_json = new JSONObject();
         goods_json.put("group_name", goods.get(0).getGroupName());
         goods_json.put("goods_name", name);
@@ -28,19 +28,22 @@ public class GoodsService {
 
     public JSONObject get_all_products(){
         List<Goods> goods = db.get_products();
+        JSONArray goods_array = new JSONArray();
         JSONObject goods_json = new JSONObject();
         int i = 0;
         while(!goods.isEmpty()){
-            goods_json.put("group_name", goods.get(i).getGroupName());
-            goods_json.put("goods_name", goods.get(i).getName());
-            goods_json.put("amount", goods.get(i).getAmount());
-            goods_json.put("price", goods.get(i).getPrice());
-            goods_json.put("about", goods.get(i).getAbout());
-            goods_json.put("producer", goods.get(i).getProducer());
-            goods_json.put("goods_id", goods.get(i).getId());
+            JSONObject good_json = new JSONObject();
+            good_json.put("group_name", goods.get(i).getGroupName());
+            good_json.put("goods_name", goods.get(i).getName());
+            good_json.put("amount", goods.get(i).getAmount());
+            good_json.put("price", goods.get(i).getPrice());
+            good_json.put("about", goods.get(i).getAbout());
+            good_json.put("producer", goods.get(i).getProducer());
+            good_json.put("goods_id", goods.get(i).getId());
             goods.remove(i);
-            i++;
+            goods_array.add(good_json);
         }
+        goods_json.put("result", goods_array);
         return goods_json;
     }
 
@@ -57,9 +60,7 @@ public class GoodsService {
     }
 
     public void update_product(String name, JSONObject goods_json) throws SQLException {
-        System.out.println("update_product IN");
         Goods goods = db.get_products_where("name", name).get(0);
-        System.out.println("update_product get_products_where OUT "+ '\n' + goods.toString() + '\n' + goods_json);
         if (goods_json.containsKey("amount")) {
             long amount = (long) goods_json.get("amount");
             if (goods.getAmount() > amount) {

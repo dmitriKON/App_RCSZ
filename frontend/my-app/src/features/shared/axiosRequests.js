@@ -652,3 +652,37 @@ export const update_product = async(jwt, body) => {
       console.log('ERROR update_product', err.message);
    }
 }
+
+export const get_all_products = async(jwt) => {
+   try {
+      if (jwt == undefined) {
+         alert("Specify all parameters, please")
+      }
+      const response = await axios.get(`${requestUrl}api/good`, {
+         headers : {
+            Authorization : `Bearer ${jwt}`,
+         }
+      });
+      console.log(response.data.result)
+      return response.data.result;
+   } catch (err) {
+      console.log('ERROR get_product_by_name', err.message);
+   }
+}
+
+export const get_all_groups = async(jwt) => {
+   try {
+      if (jwt == undefined) {
+         alert("Specify all parameters, please")
+      }
+      const response = await axios.get(`${requestUrl}api/group`, {
+         headers : {
+            Authorization : `Bearer ${jwt}`,
+         }
+      });
+      console.log(response.data.result)
+      return response.data.result;
+   } catch (err) {
+      console.log('ERROR get_product_by_name', err.message);
+   }
+}

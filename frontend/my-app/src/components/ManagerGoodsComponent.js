@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import Header from './HeaderComponent';
 import Footer from './FooterComponent';
 import ResponseObject from './ResponseObjectComponent';
-import { get_product_by_name, update_product } from '../features/shared/axiosRequests';
+import { get_product_by_name, update_product, get_all_groups, get_all_products } from '../features/shared/axiosRequests';
 import { printResults } from '../features/shared/printUtil';
 
 const mapStateToProps = state => {
@@ -21,8 +21,8 @@ const mapStateToProps = state => {
        this.state = {
             searchTypeDisplayed: null,
 
-            goodList: null,
-            groupList: null,
+            goodList: [],
+            groupList: [],
 
             goodsByGroup_result: null,
        }
@@ -33,10 +33,10 @@ const mapStateToProps = state => {
        this.clearSearchResult = this.clearSearchResult.bind(this)
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         this.setState({
-            // goodsList: await //get all goods
-            // groupList: await //get all groups
+            goodList: await get_all_products(this.props.jwt),
+            groupList: await get_all_groups(this.props.jwt)
         })
     }
 
@@ -87,10 +87,10 @@ const mapStateToProps = state => {
         }
 
         if(e.target.elements.name.value) reqObj.name = e.target.elements.name.value;
-        if(e.target.elements.amount.value) reqObj.amount = e.target.elements.amount.value;
+        if(e.target.elements.amount.value) reqObj.amount = parseInt(e.target.elements.amount.value);
         if(e.target.elements.about.value) reqObj.about = e.target.elements.about.value;
         if(e.target.elements.producer.value) reqObj.producer = e.target.elements.producer.value;
-        if(e.target.elements.price.value) reqObj.price = e.target.elements.price.value;
+        if(e.target.elements.price.value) reqObj.price = parseFloat(e.target.elements.price.value);
         if(e.target.elements.groupName.value) reqObj.group_name = e.target.elements.groupName.value;
 
         await update_product(this.props.jwt, reqObj)
@@ -182,7 +182,13 @@ const mapStateToProps = state => {
                 <Row>
                     <Label htmlFor='group' sm={3}>group name</Label>
                     <Col sm={9}>
-                        <Input name='group' id='group'></Input>
+                        <Input type="select" name='group' id='group'>
+                            {
+                                this.state.groupList.map(
+                                    obj => <option value={obj.name}>{obj.name}</option>
+                                )
+                            }
+                        </Input>
                     </Col>
                 </Row> 
                 <Row>
@@ -227,7 +233,13 @@ const mapStateToProps = state => {
                 <Row>
                     <Label htmlFor='groupName' sm={3}>group name</Label>
                     <Col sm={9}>
-                        <Input name='groupName' id='groupName'></Input>
+                        <Input type="select" name='groupName' id='groupName'>
+                            {
+                                this.state.groupList.map(
+                                    obj => <option value={obj.name}>{obj.name}</option>
+                                )
+                            }
+                        </Input>
                     </Col>
                 </Row>
                 <Row>
@@ -242,7 +254,13 @@ const mapStateToProps = state => {
                 <Row>
                     <Label htmlFor='name' sm={3}>good's name</Label>
                     <Col sm={9}>
-                        <Input name='name' id='name'></Input>
+                        <Input type="select" name='name' id='name'>
+                            {
+                                this.state.goodList.map(
+                                    obj => <option value={obj.goods_name}>{obj.goods_name}</option>
+                                )
+                            }
+                        </Input>
                     </Col>
                 </Row>
                 <Row>

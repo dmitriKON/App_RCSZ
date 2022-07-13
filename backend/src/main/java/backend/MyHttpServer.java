@@ -70,13 +70,10 @@ public class MyHttpServer {
                 try {
                     switch (method) {
                         case "GET":
-                            if(goods_name == "all"){
-                                send_response(goods_service.get_all_products().toJSONString(), 200, exchange);
-                            }
-                            else if (goods_name != "") {
+                            if (goods_name != "") {
                                 send_response(goods_service.get_product_by_name(goods_name).toJSONString(), 200, exchange);
                             } else {
-                                send_response("404: Resource not found", 404, exchange);
+                                send_response(goods_service.get_all_products().toJSONString(), 200, exchange);
                             }
                             break;
                         case "PUT":
@@ -96,17 +93,12 @@ public class MyHttpServer {
                             }
                             in = exchange.getRequestBody();
                             goods = (JSONObject) json_parser.parse(new InputStreamReader(in, StandardCharsets.UTF_8));
-                            System.out.println(goods);
-
-//                            if (!validate_goods(goods, method)) {
-//                                send_response("409: Conflict - your data contains errors", 409, exchange);
-//                                return;
-//                            }
-                            System.out.println("update_product SENT");
+                            if (!validate_goods(goods, method)) {
+                                send_response("409: Conflict - your data contains errors", 409, exchange);
+                                return;
+                            }
                             goods_service.update_product(goods_name, goods);
-                            System.out.println("update_product OUT");
                             send_response("204: Updated object", 204, exchange);
-                            System.out.println("update_product OUT 2");
                             break;
                         case "DELETE":
                             if (goods_name == "") {
@@ -166,7 +158,7 @@ public class MyHttpServer {
                             if (group_name != "") {
                                 send_response(group_service.get_group_by_name(group_name).toJSONString(), 200, exchange);
                             } else {
-                                send_response("404: Resource not found", 404, exchange);
+                                send_response(group_service.get_groups().toJSONString(), 200, exchange);
                             }
                             break;
                         case "PUT":
