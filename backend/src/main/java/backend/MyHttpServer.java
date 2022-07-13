@@ -25,7 +25,7 @@ public class MyHttpServer {
 
     static GroupService group_service = new GroupService(database_manager);
     static UserService users_service = new UserService(database_manager);
-    public static final int PORT = 4758;
+    public static final int PORT = 5000;
 
     public static void main(String[] args) throws Exception {
         HttpServer server = HttpServer.create();
@@ -54,6 +54,7 @@ public class MyHttpServer {
                 exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type,Authorization");
                 exchange.sendResponseHeaders(204, -1);
             }
+
             if (path.startsWith("/api/good")) {
                 String[] splitted_path = path.split("/");
                 String goods_name = "";
@@ -268,12 +269,14 @@ public class MyHttpServer {
         public Result authenticate(HttpExchange httpExchange) {
             try {
                 String path = httpExchange.getRequestURI().getPath();
+                String method = httpExchange.getRequestMethod();
                 if (path.equals("/login"))
                     return new Success(new HttpPrincipal("Default", "realm"));
+                if (method.equalsIgnoreCase("OPTIONS"))
+                    return new Success(new HttpPrincipal("Default", "realm"));
                 String jwt = String.valueOf(httpExchange.getRequestHeaders().getFirst("Authorization")).replace("Bearer ", "");
-                if(jwt.equals(null)){
-                    return new Failure(403);
-                }
+                if(jwt.equals("null"))
+                    return new Success(new HttpPrincipal("d", "realm"));
                 String username = JWT.extractUsername(jwt);
                 User user = users_service.get_user_by_username(username);
                 if (user == null) return new Failure(403);

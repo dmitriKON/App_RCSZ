@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import Header from './HeaderComponent';
 import Footer from './FooterComponent';
 import ResponseObject from './ResponseObjectComponent';
-import { get_objects_sorted_by, get_products_by_category, add_object, update_object, delete_object } from '../features/shared/axiosRequests';
+import { get_product_by_name } from '../features/shared/axiosRequests';
 import { printResults } from '../features/shared/printUtil';
 
 const mapStateToProps = state => {
@@ -46,8 +46,8 @@ const mapStateToProps = state => {
             alert('Enter name')
             return
         }
-
-        // await ...
+        
+        let res = await get_product_by_name(this.props.jwt, e.target.elements.name.value)
 
         this.setState({searchTypeDisplayed: 'name'})
     }

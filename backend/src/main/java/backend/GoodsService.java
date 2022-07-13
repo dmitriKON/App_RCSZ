@@ -14,6 +14,7 @@ public class GoodsService {
 
     public JSONObject get_product_by_name(String name) {
         List<Goods> goods = db.get_products_where("name", name);
+        System.out.println(goods);
         JSONObject goods_json = new JSONObject();
         goods_json.put("group_name", goods.get(0).getGroupName());
         goods_json.put("goods_name", name);

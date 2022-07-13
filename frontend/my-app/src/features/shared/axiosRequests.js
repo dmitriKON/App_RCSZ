@@ -600,4 +600,19 @@ export const get_customers_who_were_serviced_by_all_cashiers = async(jwt) => {
    }
 }
 
-// export const get_number_of_bought_products_of_certain_category_for_each_customer
+export const get_product_by_name = async(jwt, name) => {
+   try {
+      if (name == undefined) {
+         alert("Specify all parameters, please")
+      }
+      const response = await axios.get(`${requestUrl}api/good/${name}`, {
+         headers : {
+            Authorization : `Bearer ${jwt}`,
+         }
+      });
+      console.log(1, response.data)
+      return response.data;
+   } catch (err) {
+      console.log('ERROR get_product_by_name', err.message);
+   }
+}
