@@ -1,0 +1,104 @@
+.App {
+  text-align: center;
+}
+
+.row {
+  margin-bottom: 1vh;
+}
+
+.form-group {
+  padding-top: 2vh;
+}
+
+.loginContainer {
+  margin-top: 33vh;
+  border: 1px solid rgb(88, 87, 87);
+  border-radius: 20px;
+  padding-bottom: 3vh;
+  padding-top: 1vh;
+  background-color: rgb(193, 193, 216);
+}
+
+.headerNavItem {
+  background-color: #063f0d;
+  color:aliceblue;
+}
+
+.header {
+  background-color: #063f0d;
+  max-width: 100%;
+  color:aliceblue;
+}
+
+html {
+  height: 100%;
+}
+
+.container {
+  max-width: 100%;
+}
+
+.homeBody {
+  background-color: #9bd19f;
+}
+
+.homeCategoryBtn {
+  width: 40vh;
+  height: 30vh;
+  border: 0px;
+  background-color: #f5fff7;
+  color: #0e3f15;
+  font-size: large;
+  margin-top: 2em;
+}
+
+.homeCategoryBtn:hover {
+  border: 1px solid #f5fff7;
+  background-color: #063f0d;
+  color: #f5fff7;
+}
+
+.colHomeCategoryButton {
+  text-align: right
+}
+
+
+@media (max-width: 992px) { 
+  .homeCategoryBtn {
+    width: 30vh;
+    height: 22.5vh;
+  }
+  .colHomeCategoryButton {
+    text-align: center
+  }
+  .homeRow {
+    width: fit-content;
+  }
+
+ }
+
+.responseObject {
+  border: 1px solid #063f0d;
+}
+
+.footer {
+  width: 100%;
+  background-color: #063f0d;
+  font-size: large;
+  color:#f5fff7;
+  text-align: center;
+  padding-top: 2em;
+  padding-bottom: 2em;
+  margin-top: 3em;
+  /* position:absolute;
+  bottom:0; */
+}
+
+#headerLogo {
+  color:aliceblue;
+  font-size: 36px;
+  margin-top: 1em;
+  margin-top: 1em;
+}
+
+.html2canvas-container { width: 3000px !important; height: 3000px !important; }
