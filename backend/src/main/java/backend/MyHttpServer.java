@@ -34,6 +34,7 @@ public class MyHttpServer {
         context.setAuthenticator(new Auth());
         server.setExecutor(Executors.newCachedThreadPool());
         server.start();
+        System.out.println("Sever started on "+ PORT + " port...");
     }
 
 
@@ -95,13 +96,17 @@ public class MyHttpServer {
                             }
                             in = exchange.getRequestBody();
                             goods = (JSONObject) json_parser.parse(new InputStreamReader(in, StandardCharsets.UTF_8));
+                            System.out.println(goods);
 
-                            if (!validate_goods(goods, method)) {
-                                send_response("409: Conflict - your data contains errors", 409, exchange);
-                                return;
-                            }
+//                            if (!validate_goods(goods, method)) {
+//                                send_response("409: Conflict - your data contains errors", 409, exchange);
+//                                return;
+//                            }
+                            System.out.println("update_product SENT");
                             goods_service.update_product(goods_name, goods);
+                            System.out.println("update_product OUT");
                             send_response("204: Updated object", 204, exchange);
+                            System.out.println("update_product OUT 2");
                             break;
                         case "DELETE":
                             if (goods_name == "") {

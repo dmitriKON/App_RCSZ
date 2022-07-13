@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import Header from './HeaderComponent';
 import Footer from './FooterComponent';
 import ResponseObject from './ResponseObjectComponent';
-import { get_product_by_name } from '../features/shared/axiosRequests';
+import { get_product_by_name, update_product } from '../features/shared/axiosRequests';
 import { printResults } from '../features/shared/printUtil';
 
 const mapStateToProps = state => {
@@ -79,21 +79,21 @@ const mapStateToProps = state => {
 
     async updateGood(e) {
         e.preventDefault()
-        // if (!e.target.elements.id_product.value) return
-        // let reqObj = {
-        //     "filter_data": {
-        //         "id_product": e.target.elements.id_product.value,
-        //       },
-        //     "obj_data": {
-        //       },
-        //       "table_name": "Product"
-        // }
+        if (!e.target.elements.name.value) {
+            alert('Specify good')
+            return
+        }
+        let reqObj = {
+        }
 
-        // if(e.target.elements.category_number.value) reqObj.obj_data.category_number = e.target.elements.category_number.value;
-        // if(e.target.elements.characteristics_name.value) reqObj.obj_data.characteristics_name = e.target.elements.characteristics_name.value;
-        // if(e.target.elements.product_name.value) reqObj.obj_data.product_name = e.target.elements.product_name.value;
+        if(e.target.elements.name.value) reqObj.name = e.target.elements.name.value;
+        if(e.target.elements.amount.value) reqObj.amount = e.target.elements.amount.value;
+        if(e.target.elements.about.value) reqObj.about = e.target.elements.about.value;
+        if(e.target.elements.producer.value) reqObj.producer = e.target.elements.producer.value;
+        if(e.target.elements.price.value) reqObj.price = e.target.elements.price.value;
+        if(e.target.elements.groupName.value) reqObj.group_name = e.target.elements.groupName.value;
 
-        // await update_object(this.props.jwt, reqObj)
+        await update_product(this.props.jwt, reqObj)
         this.clearSearchResult()
     }
 
@@ -110,8 +110,13 @@ const mapStateToProps = state => {
     }
 
     clearSearchResult() {
-        for (let key of this.state) this.setState({ key: null })
-        // this.setState({ searchTypeDisplayed: null, productsList: null, searchByCategoryNumberResult: null })
+         this.setState({ 
+            searchTypeDisplayed: null,
+
+            goodList: null,
+            groupList: null,
+
+            goodsByGroup_result: null, })
     }
 
 
@@ -196,12 +201,17 @@ const mapStateToProps = state => {
                     </Col>
                 </Row> 
                 <Row>
-                    <Label htmlFor='description' sm={3}>description</Label>
+                    <Label htmlFor='amount' sm={3}>amount</Label>
                     <Col sm={9}>
-                        <Input name='description' id='description'></Input>
+                        <Input name='amount' id='amount'></Input>
                     </Col>
                 </Row> 
-               
+                <Row>
+                    <Label htmlFor='about' sm={3}>description</Label>
+                    <Col sm={9}>
+                        <Input name='about' id='about'></Input>
+                    </Col>
+                </Row> 
                 <Row>
                     <Label htmlFor='producer' sm={3}>producer</Label>
                     <Col sm={9}>
@@ -215,9 +225,9 @@ const mapStateToProps = state => {
                     </Col>
                 </Row>
                 <Row>
-                    <Label htmlFor='group' sm={3}>group name</Label>
+                    <Label htmlFor='groupName' sm={3}>group name</Label>
                     <Col sm={9}>
-                        <Input name='group' id='group'></Input>
+                        <Input name='groupName' id='groupName'></Input>
                     </Col>
                 </Row>
                 <Row>

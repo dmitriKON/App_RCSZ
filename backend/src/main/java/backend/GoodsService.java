@@ -57,7 +57,9 @@ public class GoodsService {
     }
 
     public void update_product(String name, JSONObject goods_json) throws SQLException {
+        System.out.println("update_product IN");
         Goods goods = db.get_products_where("name", name).get(0);
+        System.out.println("update_product get_products_where OUT "+ '\n' + goods.toString() + '\n' + goods_json);
         if (goods_json.containsKey("amount")) {
             long amount = (long) goods_json.get("amount");
             if (goods.getAmount() > amount) {

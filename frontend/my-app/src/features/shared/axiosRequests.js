@@ -610,9 +610,45 @@ export const get_product_by_name = async(jwt, name) => {
             Authorization : `Bearer ${jwt}`,
          }
       });
-      console.log(1, response.data)
+      console.log(response.data)
       return response.data;
    } catch (err) {
       console.log('ERROR get_product_by_name', err.message);
+   }
+}
+
+
+// export const update_product = async(jwt, body) => {
+//    try {
+//       if (jwt == undefined) {
+//          alert("Specify all parameters, please")
+//       }
+//       console.log(1, body)
+//       const response = await axios.post(`${requestUrl}api/good/${body.name}`, {
+//          headers : {
+//             'Authorization' : `Bearer ${jwt}`,
+//             // 'Content-Type' : 'application/json'
+//          },
+//          data: body
+//       });
+//       console.log(response.data)
+//       return response.data;
+//    } catch (err) {
+//       console.log('ERROR update_product', err.message);
+//    }
+// }
+
+export const update_product = async(jwt, body) => {
+   try {
+      if (jwt == undefined) {
+         alert("Specify all parameters, please")
+      }
+      console.log(`${requestUrl}api/good/${body.name}`, body)
+      // const response = 
+      await axios.post(`${requestUrl}api/good/${body.name}`, body);
+      // console.log(response)
+      // return response.data;
+   } catch (err) {
+      console.log('ERROR update_product', err.message);
    }
 }
