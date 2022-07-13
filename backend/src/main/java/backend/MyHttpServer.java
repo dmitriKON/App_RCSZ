@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.Objects;
+import java.util.concurrent.Executors;
 
 public class MyHttpServer {
 
@@ -31,7 +32,7 @@ public class MyHttpServer {
         server.bind(new InetSocketAddress(PORT), 0);
         HttpContext context = server.createContext("/", new RequestHandler());
         context.setAuthenticator(new Auth());
-        server.setExecutor(null);
+        server.setExecutor(Executors.newCachedThreadPool());
         server.start();
     }
 
