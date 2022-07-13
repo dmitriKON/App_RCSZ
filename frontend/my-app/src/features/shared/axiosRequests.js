@@ -622,7 +622,11 @@ export const update_product = async(jwt, body) => {
       if (jwt == undefined) {
          alert("Specify all parameters, please")
       }
-      await axios.post(`${requestUrl}api/good/${body.name}`, body);
+      await axios.post(`${requestUrl}api/good/${body.name}`, body, {
+         headers : {
+            Authorization : `Bearer ${jwt}`,
+         }
+      });
    } catch (err) {
       console.log('ERROR update_product', err.message);
    }

@@ -30,6 +30,7 @@ public class MyHttpServer {
     public static void main(String[] args) throws Exception {
         HttpServer server = HttpServer.create();
         server.bind(new InetSocketAddress(PORT), 0);
+
         HttpContext context = server.createContext("/", new RequestHandler());
         context.setAuthenticator(new Auth());
         server.setExecutor(Executors.newCachedThreadPool());
@@ -56,6 +57,7 @@ public class MyHttpServer {
                 exchange.sendResponseHeaders(204, -1);
             }
 
+            System.out.println(path + " " + method);
             if (path.startsWith("/api/good")) {
                 String[] splitted_path = path.split("/");
                 String goods_name = "";
@@ -277,7 +279,7 @@ public class MyHttpServer {
                     return new Success(new HttpPrincipal("Default", "realm"));
                 String jwt = String.valueOf(httpExchange.getRequestHeaders().getFirst("Authorization")).replace("Bearer ", "");
                 if(jwt.equals("null"))
-                    return new Success(new HttpPrincipal("d", "realm"));
+                    return new Failure(403);
                 String username = JWT.extractUsername(jwt);
                 User user = users_service.get_user_by_username(username);
                 if (user == null) return new Failure(403);
