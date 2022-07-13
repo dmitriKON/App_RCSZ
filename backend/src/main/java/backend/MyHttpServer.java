@@ -80,11 +80,14 @@ public class MyHttpServer {
                             in = exchange.getRequestBody();
                             goods = (JSONObject) json_parser.parse(new InputStreamReader(in, StandardCharsets.UTF_8));
 
+                            System.out.println("000");
                             if (!validate_goods(goods, method)) {
                                 send_response("409: Conflict - your data contains errors", 409, exchange);
                                 return;
                             }
+                            System.out.println("111");
                             JSONObject goods_id = goods_service.create_new_product(goods);
+                            System.out.println("222");
                             send_response(goods_id.toJSONString(), 201, exchange);
                             return;
                         case "POST":
@@ -217,6 +220,7 @@ public class MyHttpServer {
         public boolean validate_goods(JSONObject goods, String method) {
             switch (method) {
                 case "PUT":
+                    System.out.println(goods.toString());
                     if (
                             goods.containsKey("name") &&
                             goods.containsKey("group_name") &&

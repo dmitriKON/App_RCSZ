@@ -617,37 +617,12 @@ export const get_product_by_name = async(jwt, name) => {
    }
 }
 
-
-// export const update_product = async(jwt, body) => {
-//    try {
-//       if (jwt == undefined) {
-//          alert("Specify all parameters, please")
-//       }
-//       console.log(1, body)
-//       const response = await axios.post(`${requestUrl}api/good/${body.name}`, {
-//          headers : {
-//             'Authorization' : `Bearer ${jwt}`,
-//             // 'Content-Type' : 'application/json'
-//          },
-//          data: body
-//       });
-//       console.log(response.data)
-//       return response.data;
-//    } catch (err) {
-//       console.log('ERROR update_product', err.message);
-//    }
-// }
-
 export const update_product = async(jwt, body) => {
    try {
       if (jwt == undefined) {
          alert("Specify all parameters, please")
       }
-      console.log(`${requestUrl}api/good/${body.name}`, body)
-      // const response = 
       await axios.post(`${requestUrl}api/good/${body.name}`, body);
-      // console.log(response)
-      // return response.data;
    } catch (err) {
       console.log('ERROR update_product', err.message);
    }
@@ -684,5 +659,37 @@ export const get_all_groups = async(jwt) => {
       return response.data.result;
    } catch (err) {
       console.log('ERROR get_product_by_name', err.message);
+   }
+}
+
+export const delete_product = async(jwt, name) => {
+   try {
+      if (name == undefined) {
+         alert("Specify all parameters, please")
+      }
+      const response = await axios.delete(`${requestUrl}api/good/${name}`, {
+         headers : {
+            Authorization : `Bearer ${jwt}`,
+         }
+      });
+      console.log(response.data)
+      return response.data;
+   } catch (err) {
+      console.log('ERROR delete_product', err.message);
+   }
+}
+
+export const create_product = async(jwt, body) => {
+   try {
+      if (jwt == undefined) {
+         alert("Specify all parameters, please")
+      }
+      await axios.put(`${requestUrl}api/good`, body, {
+         headers : {
+            Authorization : `Bearer ${jwt}`,
+         }
+      });
+   } catch (err) {
+      console.log('ERROR create_product', err.message);
    }
 }

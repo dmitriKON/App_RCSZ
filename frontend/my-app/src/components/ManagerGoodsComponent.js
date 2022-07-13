@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import Header from './HeaderComponent';
 import Footer from './FooterComponent';
 import ResponseObject from './ResponseObjectComponent';
-import { get_product_by_name, update_product, get_all_groups, get_all_products } from '../features/shared/axiosRequests';
+import { get_product_by_name, update_product, get_all_groups, get_all_products, delete_product, create_product } from '../features/shared/axiosRequests';
 import { printResults } from '../features/shared/printUtil';
 
 const mapStateToProps = state => {
@@ -74,6 +74,22 @@ const mapStateToProps = state => {
         //       },
         //       "table_name": "Product"
         // })
+        if (!e.target.elements.name.value) {
+            alert('Specify good')
+            return
+        }
+        let reqObj = {
+        }
+
+        if(e.target.elements.name.value) reqObj.name = e.target.elements.name.value;
+        if(e.target.elements.amount.value) reqObj.amount = parseInt(e.target.elements.amount.value);
+        if(e.target.elements.about.value) reqObj.about = e.target.elements.about.value;
+        if(e.target.elements.producer.value) reqObj.producer = e.target.elements.producer.value;
+        if(e.target.elements.price.value) reqObj.price = parseFloat(e.target.elements.price.value);
+        if(e.target.elements.groupName.value) reqObj.group_name = e.target.elements.groupName.value;
+
+        await create_product(this.props.jwt, reqObj)
+
         this.clearSearchResult()
     }
 
@@ -99,7 +115,12 @@ const mapStateToProps = state => {
 
     async deleteGood(e) {
         e.preventDefault()
-        // if (!e.target.elements.id_product.value) return
+        if (!e.target.elements.name.value) {
+            alert('Specify good')
+            return
+        }
+        
+        await delete_product(this.props.jwt,  e.target.elements.name.value)
         // await delete_object(this.props.jwt, {
         //     "filter_data": {
         //       "id_product": e.target.elements.id_product.value
@@ -113,8 +134,8 @@ const mapStateToProps = state => {
          this.setState({ 
             searchTypeDisplayed: null,
 
-            goodList: null,
-            groupList: null,
+            // goodList: [],
+            // groupList: [],
 
             goodsByGroup_result: null, })
     }
@@ -154,19 +175,24 @@ const mapStateToProps = state => {
         let addGoodForm = 
         <Form onSubmit={e => this.addGood(e)}>
             <Container style={{'border': '1px solid black', 'padding': '20px', 'marginTop': '1vh', 'borderRadius': '5px', 'width': '99%'}}> 
-                <Row>
+            <Row>
                     <Label htmlFor='name' sm={3}>name</Label>
                     <Col sm={9}>
                         <Input name='name' id='name'></Input>
                     </Col>
                 </Row> 
                 <Row>
-                    <Label htmlFor='description' sm={3}>description</Label>
+                    <Label htmlFor='amount' sm={3}>amount</Label>
                     <Col sm={9}>
-                        <Input name='description' id='description'></Input>
+                        <Input name='amount' id='amount'></Input>
                     </Col>
                 </Row> 
-               
+                <Row>
+                    <Label htmlFor='about' sm={3}>description</Label>
+                    <Col sm={9}>
+                        <Input name='about' id='about'></Input>
+                    </Col>
+                </Row> 
                 <Row>
                     <Label htmlFor='producer' sm={3}>producer</Label>
                     <Col sm={9}>
@@ -180,9 +206,9 @@ const mapStateToProps = state => {
                     </Col>
                 </Row>
                 <Row>
-                    <Label htmlFor='group' sm={3}>group name</Label>
+                    <Label htmlFor='groupName' sm={3}>group name</Label>
                     <Col sm={9}>
-                        <Input type="select" name='group' id='group'>
+                        <Input type="select" name='groupName' id='groupName'>
                             {
                                 this.state.groupList.map(
                                     obj => <option value={obj.name}>{obj.name}</option>
@@ -190,9 +216,9 @@ const mapStateToProps = state => {
                             }
                         </Input>
                     </Col>
-                </Row> 
+                </Row>
                 <Row>
-                    <Button type='submit' color='success' size="lg">Add</Button>
+                    <Button type='submit' color='success' size="lg">ADD</Button>
                 </Row>
             </Container>       
         </Form>
@@ -201,7 +227,7 @@ const mapStateToProps = state => {
         <Form onSubmit={e => this.updateGood(e)}>
             <Container style={{'border': '1px solid black', 'padding': '20px', 'marginTop': '1vh', 'borderRadius': '5px', 'width': '99%'}}> 
             <Row>
-                    <Label htmlFor='name' sm={3}>name</Label>
+                    <Label htmlFor='name' sm={3} style={{'color': 'red'}}>name</Label>
                     <Col sm={9}>
                         <Input name='name' id='name'></Input>
                     </Col>
