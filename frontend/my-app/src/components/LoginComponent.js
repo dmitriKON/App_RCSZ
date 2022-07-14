@@ -26,7 +26,10 @@ class Login extends Component {
         .then((response) => {
             this.props.changeJwt(response.data.jwt)
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            console.log(err)
+            alert(err.message)
+        });
     }
 
     render () {
@@ -34,7 +37,7 @@ class Login extends Component {
             <div className="container loginContainer">
                 <Form onSubmit={e => this.handleSubmit(e)}>
                     <Row className="form-group">
-                        <Label htmlFor="username" md={2}>Phone Number</Label>
+                        <Label htmlFor="username" md={2}>Username</Label>
                         <Col md={10}>
                             <Input name="username" id="username" />
                         </Col>
