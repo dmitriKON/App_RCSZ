@@ -27,8 +27,35 @@ public class MyHttpServer {
     public static final int PORT = 5000;
 
     public static void main(String[] args) throws Exception {
-        HttpServer server = HttpServer.create();
+        HttpsServer server = HttpsServer.create();
         server.bind(new InetSocketAddress(PORT), 0);
+
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        char[] password = "1234567".toCharArray();
+        KeyStore keyStore = KeyStore.getInstance("JKS");
+        FileInputStream keystream = new FileInputStream("src/main/java/sslkey.jks");
+        keyStore.load(keystream, password);
+        KeyManagerFactory keyManager = KeyManagerFactory.getInstance("SunX509");
+        keyManager.init(keyStore, password);
+        TrustManagerFactory trustManager = TrustManagerFactory.getInstance("SunX509");
+        trustManager.init(keyStore);
+        sslContext.init(keyManager.getKeyManagers(), trustManager.getTrustManagers(), null);
+        server.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
+            public void configure(HttpsParameters params) {
+                try {
+                    SSLContext sslContext = getSSLContext();
+                    SSLEngine sslEngine = sslContext.createSSLEngine();
+                    params.setNeedClientAuth(false);
+                    params.setCipherSuites(sslEngine.getEnabledCipherSuites());
+                    params.setProtocols(sslEngine.getEnabledProtocols());
+                    SSLParameters sslParameters = sslContext.getSupportedSSLParameters();
+                    params.setSSLParameters(sslParameters);
+                } catch (Exception e) {
+                    System.out.println("Failed to create the HTTPS port");
+                }
+            }
+        });
+
         HttpContext context = server.createContext("/", new RequestHandler());
         context.setAuthenticator(new Auth());
         server.setExecutor(Executors.newCachedThreadPool());
