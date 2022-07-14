@@ -1,5 +1,6 @@
 import { Component } from 'react';
-import { Container, Row, Col, Button, Form, Input, Label } from "reactstrap";
+import { Container, Row, Col, Button, Form, Input, Label, Breadcrumb, BreadcrumbItem } from "reactstrap";
+import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import Header from './HeaderComponent';
@@ -102,7 +103,10 @@ const mapStateToProps = state => {
         if(e.target.elements.price.value) reqObj.price = parseFloat(e.target.elements.price.value); else { alert('Specify good'); return }
         if(e.target.elements.groupName.value) reqObj.group_name = e.target.elements.groupName.value; else { alert('Specify good'); return }
 
-        let res = await create_product(this.props.jwt, reqObj)
+        await create_product(this.props.jwt, reqObj)
+        .then(() => {
+            alert(`${reqObj.name} has been created.`)
+        })
 
         this.clearSearchResult()
     }
@@ -124,6 +128,9 @@ const mapStateToProps = state => {
         if(e.target.elements.groupName.value) reqObj.group_name = e.target.elements.groupName.value;
 
         await update_product(this.props.jwt, reqObj)
+        .then(() => {
+            alert(`${reqObj.name} has been updated.`)
+        })
         this.clearSearchResult()
     }
 
@@ -135,13 +142,16 @@ const mapStateToProps = state => {
         }
         
         await delete_product(this.props.jwt,  e.target.elements.name.value)
+        .then(() => {
+            alert(`${e.target.elements.name.value} has been deleted.`)
+        })
         this.clearSearchResult()
     }
 
     async buySaleGood(e, name) {
         e.preventDefault()
         let value = parseInt(e.target.elements.buySaleAmount.value);
-        if (value == 0) return;
+        if (value === 0) return;
 
         let good = Object.assign(this.state.goodList.filter(el => el.goods_name === name)[0])
         console.log('good', good)
@@ -154,7 +164,7 @@ const mapStateToProps = state => {
 
         if (value < 0) {
             if (good.amount + value < 0) {
-                alert('There is no so many items of the product.')
+                alert('There is no such amount of items of this product.')
                 return
             } else if (good.amount + value > 0){
                 good.amount += value
@@ -269,7 +279,7 @@ const mapStateToProps = state => {
         let addGoodForm = 
         <Form onSubmit={e => this.addGood(e)}>
             <Container style={{'border': '1px solid black', 'padding': '20px', 'marginTop': '1vh', 'borderRadius': '5px', 'width': '99%'}}> 
-            <Row>
+                <Row>
                     <Label htmlFor='name' sm={3}>name</Label>
                     <Col sm={9}>
                         <Input name='name' id='name'></Input>
@@ -399,6 +409,14 @@ const mapStateToProps = state => {
             <div>
                 <Header/>
                 <Container>
+                    <Row>
+                        <Breadcrumb>
+                            <BreadcrumbItem>
+                                <NavLink to='/home'>Home</NavLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbItem active>Goods</BreadcrumbItem>
+                        </Breadcrumb>
+                    </Row>
                     <Row style={{'marginBottom': '15px'}}>
                         <Form onSubmit={e => this.getGoodByName(e)}>
                             <Row className="form-group">

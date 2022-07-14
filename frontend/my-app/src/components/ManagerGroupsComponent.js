@@ -1,5 +1,6 @@
 import { Component } from 'react';
-import { Container, Row, Col, Button, Form, Input, Label } from "reactstrap";
+import { Container, Row, Col, Button, Form, Input, Label, Breadcrumb, BreadcrumbItem } from "reactstrap";
+import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import Header from './HeaderComponent';
@@ -20,6 +21,8 @@ const mapStateToProps = state => {
 
        this.state = {
             searchResult: null,
+
+            groupList: [],
        }
 
        this.getCategories = this.getCategories.bind(this);
@@ -30,6 +33,11 @@ const mapStateToProps = state => {
 
        
        this.clearSearchResult = this.clearSearchResult.bind(this);
+    }
+    async componentDidMount() {
+        this.setState({
+            groupList: await get_all_groups(this.props.jwt)
+        })
     }
 
     async getCategories() {
@@ -48,23 +56,29 @@ const mapStateToProps = state => {
             about: e.target.elements.about.value 
         }
 
-        let res = await create_group(this.props.jwt, reqObj)
+        await create_group(this.props.jwt, reqObj)
+        .then(() => {
+            alert(`${reqObj.name} has been created.`)
+        })
 
         this.clearSearchResult()
     }
 
     async update_category(e) {
         e.preventDefault()
-        if (!e.target.elements.name.value || !e.target.elements.about.value ) {
+        if (!e.target.elements.name_update.value || !e.target.elements.about.value ) {
             alert('Specify group')
             return
         }
         let reqObj = {
-            name: e.target.elements.name.value,
+            name: e.target.elements.name_update.value,
             about: e.target.elements.about.value 
         }
 
-        let res = await update_group(this.props.jwt, reqObj)
+        await update_group(this.props.jwt, reqObj)
+        .then(() => {
+            alert(`${reqObj.name} has been updated.`)
+        })
 
         this.clearSearchResult()
     }
@@ -77,13 +91,17 @@ const mapStateToProps = state => {
         }
 
         await delete_group(this.props.jwt, e.target.elements.name.value)
+        .then(() => {
+            alert(`${e.target.elements.name.value} has been deleted.`)
+        })
 
         this.clearSearchResult()
     }
 
-    clearSearchResult() {
+    async clearSearchResult() {
         this.setState({
-            searchResult: null
+            searchResult: null,
+            groupList: await get_all_groups(this.props.jwt),
         })
     }
 
@@ -120,9 +138,15 @@ const mapStateToProps = state => {
         <Form onSubmit={e => this.update_category(e)}>
             <Container style={{'border': '1px solid black', 'padding': '20px', 'marginTop': '1vh', 'borderRadius': '5px', 'width': '99%'}}>
                 <Row>
-                    <Label htmlFor='name' sm={3}>name</Label>
+                    <Label htmlFor='name_update' sm={3}>name</Label>
                     <Col sm={9}>
-                        <Input name='name' id='name'></Input>
+                        <Input type="select" name='name_update' id='name_update'>
+                            {
+                                this.state.groupList.map(
+                                    obj => <option value={obj.name}>{obj.name}</option>
+                                )
+                            }
+                        </Input>
                     </Col>
                 </Row>
                 <Row>
@@ -142,8 +166,14 @@ const mapStateToProps = state => {
             <Container style={{'border': '1px solid black', 'padding': '20px', 'marginTop': '1vh', 'borderRadius': '5px', 'width': '99%'}}> 
                 <Row>
                     <Label htmlFor='name' sm={3}>name</Label>
-                    <Col sm={9}>
-                        <Input name='name' id='name'></Input>
+                    <Col sm={9}>                        
+                        <Input type="select" name='name' id='name'>
+                            {
+                                this.state.groupList.map(
+                                    obj => <option value={obj.name}>{obj.name}</option>
+                                )
+                            }
+                        </Input>
                     </Col>
                 </Row>
                 <Row>
@@ -156,6 +186,14 @@ const mapStateToProps = state => {
             <div>
                 <Header/>
                 <Container>
+                    <Row>
+                        <Breadcrumb>
+                            <BreadcrumbItem>
+                                <NavLink to='/home'>Home</NavLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbItem active>Groups</BreadcrumbItem>
+                        </Breadcrumb>
+                    </Row>
                     <Row style={{ "marginBottom": "15px" }}>
                         <Col sm={1}></Col>
                         <Col sm={2} >
