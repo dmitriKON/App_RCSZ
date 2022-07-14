@@ -12,7 +12,7 @@ public class Goods {
 
     private String about;
 
-    private String producer;
+    private String ;
 
     public Goods(int id, String name, int amount, String groupName, double price, String about, String producer) {
         this.id = id;

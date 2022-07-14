@@ -24,11 +24,23 @@ const mapStateToProps = state => {
             goodList: [],
             groupList: [],
 
+            goodByGroupList: [],
+
+            goodByName_result: null,
             goodsByGroup_result: null,
+
+            totalSum_result: null,
        }
 
+       this.addGood = this.addGood.bind(this)
+       this.updateGood = this.updateGood.bind(this)
+       this.deleteGood = this.deleteGood.bind(this)
        this.getGoodByName = this.getGoodByName.bind(this)
        this.getGoodByGroup = this.getGoodByGroup.bind(this)
+
+       this.getGroupsTotalSum = this.getGroupsTotalSum.bind(this)
+
+       this.buySaleGood = this.buySaleGood.bind(this)
 
        this.clearSearchResult = this.clearSearchResult.bind(this)
     }
@@ -49,31 +61,33 @@ const mapStateToProps = state => {
         
         let res = await get_product_by_name(this.props.jwt, e.target.elements.name.value)
 
-        this.setState({searchTypeDisplayed: 'name'})
+        this.setState({goodByName_result: res, searchTypeDisplayed: 'name'})
     }
 
     async getGoodByGroup(e) {
         e.preventDefault()
 
         if (e.target.elements.select_group.value === 'all') {
-            // this.setState({ goodList: await ..., searchTypeDisplayed: 'all' })
+            this.setState({ goodList: await get_all_products(this.props.jwt), searchTypeDisplayed: 'all' })
         } else {
-            // payload with group name equal to e.target.elements.select_group.value
-            // this setState({ goodsByGroup_result: await ..., searchTypeDisplayed: 'group' })
+            let res = [...this.state.goodList].filter(good => good.group_name === e.target.elements.select_group.value)
+            this.setState({ goodByGroupList: res, searchTypeDisplayed: 'group' })
         }
+    }
+
+    getGroupsTotalSum(e) {
+        e.preventDefault()
+        let goods = (e.target.elements.select_group_sum.value === 'all') ? 
+            [...this.state.goodList] : [...this.state.goodList].filter(good => good.group_name === e.target.elements.select_group_sum.value)
+        let value = 0
+        for (let good of goods) {
+            value += good.amount * good.price
+        }
+        this.setState({ totalSum_result: { name: e.target.elements.select_group_sum.value, sum: value}, searchTypeDisplayed: 'sum' })
     }
 
     async addGood(e) {
         e.preventDefault()
-        // if (!e.target.elements.category_number.value || !e.target.elements.characteristics_name.value || !e.target.elements.product_name.value) return
-        // await add_object(this.props.jwt, {
-        //     "obj_data": {
-        //         "category_number": e.target.elements.category_number.value,
-        //         "characteristics_name": e.target.elements.characteristics_name.value,
-        //         "product_name": e.target.elements.product_name.value
-        //       },
-        //       "table_name": "Product"
-        // })
         if (!e.target.elements.name.value) {
             alert('Specify good')
             return
@@ -81,14 +95,14 @@ const mapStateToProps = state => {
         let reqObj = {
         }
 
-        if(e.target.elements.name.value) reqObj.name = e.target.elements.name.value;
-        if(e.target.elements.amount.value) reqObj.amount = parseInt(e.target.elements.amount.value);
-        if(e.target.elements.about.value) reqObj.about = e.target.elements.about.value;
-        if(e.target.elements.producer.value) reqObj.producer = e.target.elements.producer.value;
-        if(e.target.elements.price.value) reqObj.price = parseFloat(e.target.elements.price.value);
-        if(e.target.elements.groupName.value) reqObj.group_name = e.target.elements.groupName.value;
+        if(e.target.elements.name.value) reqObj.name = e.target.elements.name.value; else { alert('Specify good'); return }
+        if(e.target.elements.amount.value) reqObj.amount = parseInt(e.target.elements.amount.value); else { alert('Specify good'); return }
+        if(e.target.elements.about.value) reqObj.about = e.target.elements.about.value; else { alert('Specify good'); return }
+        if(e.target.elements.producer.value) reqObj.producer = e.target.elements.producer.value; else { alert('Specify good'); return }
+        if(e.target.elements.price.value) reqObj.price = parseFloat(e.target.elements.price.value); else { alert('Specify good'); return }
+        if(e.target.elements.groupName.value) reqObj.group_name = e.target.elements.groupName.value; else { alert('Specify good'); return }
 
-        await create_product(this.props.jwt, reqObj)
+        let res = await create_product(this.props.jwt, reqObj)
 
         this.clearSearchResult()
     }
@@ -121,55 +135,121 @@ const mapStateToProps = state => {
         }
         
         await delete_product(this.props.jwt,  e.target.elements.name.value)
-        // await delete_object(this.props.jwt, {
-        //     "filter_data": {
-        //       "id_product": e.target.elements.id_product.value
-        //     },
-        //     "table_name": "Product"
-        // })
         this.clearSearchResult()
     }
 
-    clearSearchResult() {
+    async buySaleGood(e, name) {
+        e.preventDefault()
+        let value = parseInt(e.target.elements.buySaleAmount.value);
+        if (value == 0) return;
+
+        let good = Object.assign(this.state.goodList.filter(el => el.goods_name === name)[0])
+        console.log('good', good)
+        if (!good) throw new Error('No such good to buy/sale')
+
+        Object.defineProperty(good, 'name',
+            Object.getOwnPropertyDescriptor(good, 'goods_name'));
+        delete good.goods_name;
+        good.amount = parseInt(good.amount)
+
+        if (value < 0) {
+            if (good.amount + value < 0) {
+                alert('There is no so many items of the product.')
+                return
+            } else if (good.amount + value > 0){
+                good.amount += value
+                console.log('reqObj', good)
+                await update_product(this.props.jwt, {'name': good.name, 'amount': good.amount})
+            } else {
+                console.log('NAME', good.name)
+                await delete_product(this.props.jwt, good['name'])
+            }
+        } else {
+            good.amount += value
+            console.log('reqObj+', good)
+            await update_product(this.props.jwt, {'name': good.name, 'amount': good.amount})
+        }
+
+        this.clearSearchResult()
+    }
+
+    async clearSearchResult() {
          this.setState({ 
             searchTypeDisplayed: null,
 
-            // goodList: [],
-            // groupList: [],
+            goodList: await get_all_products(this.props.jwt),
+            groupList: await get_all_groups(this.props.jwt),
 
-            goodsByGroup_result: null, })
+            goodByName_result: null,
+            goodsByGroup_result: null,
+        })
     }
 
 
     render() {
-        // let allProductsListElement = (this.state.productsList) ? (
-        //     <>
-        //         {this.state.productsList.map(el => 
-        //             <ResponseObject obj={el} title='product_name'/>
-        //         )}              
-        //     </>
+        let allProductsListElement = (this.state.goodList) ? (
+            <>
+                {this.state.goodList.map(el =>
+                <Row style={{'border':'1px solid black'}}>
+                    <ResponseObject obj={el} title='goods_name' sm={9} border='0px'/>
+                    <Col sm={2} style={{"textAlign":"center"}}>
+                        <Form onSubmit={(e, name) => this.buySaleGood(e, el.goods_name)}>
+                            <br/><br/><br/><br/>
+                            <h2>+ buy/sale -</h2>
+                            <Input type='number' name='buySaleAmount' id='buySaleAmount'/>
+                            <Button type='submit' style={{'marginTop':'1vh'}}>Save</Button>
+                        </Form>                        
+                    </Col>
+                </Row>
+                )}              
+            </>
  
-        // ) : <>no all :c</>
+        ) : <>no all :c</>
+
+        let searchByGroupElement = (this.state.goodByGroupList) ? (
+            <>
+                {this.state.goodByGroupList.map(el => 
+                    <ResponseObject obj={el} title='goods_name'/>
+                )}              
+            </>
+ 
+        ) : <>no group :c</>
+
+        let byNameElemement = (this.state.goodByName_result) ? 
+            <ResponseObject obj={this.state.goodByName_result} title='goods_name'/>
+            : <>no name :c</>
 
 
-        // let searchResult;
-        // switch(this.state.searchTypeDisplayed) {
-        //     case 'all':
-        //         searchResult = allProductsListElement;
-        //         break;
-        //     case 'category':
-        //         searchResult = searchByCategoryElement;
-        //         break;
-        //     default:
-        //         break;
-        // }
+        let sumElement = (this.state.totalSum_result) ?
+            <>
+                <ResponseObject obj={this.state.totalSum_result} title='name'/>
+            </> : <></>
+
+
+        let searchResult;
+        switch(this.state.searchTypeDisplayed) {
+            case 'all':
+                searchResult = allProductsListElement;
+                break;
+            case 'name':
+                searchResult = byNameElemement;
+                break;    
+            case 'group':
+                searchResult = searchByGroupElement;
+                break;
+            case 'sum':
+                searchResult = sumElement;
+                break;
+            default:
+                break;
+        }
 
         let searchByGroup_list = (this.state.groupList) ? 
         <>
             <option value={"all"}>All</option>
-            {this.state.groupList.map(group => {
+            {this.state.groupList.map(group => 
                 <option value={`${group.name}`}>{group.name}</option>
-            })}
+            )}
         </> : <option value={"all"}>All</option>
 
         let addGoodForm = 
@@ -329,7 +409,21 @@ const mapStateToProps = state => {
                                     </Input>
                                 </Col>  
                             </Row>
-
+                        </Form>    
+                    </Row>
+                    <Row>
+                        <Form onSubmit={e => this.getGroupsTotalSum(e)}>
+                            <Row>
+                                <Col sm={3}></Col> 
+                                <Col sm={6} style={{'textAlign': 'center'}}>
+                                    <Button size='lg' type='submit' block>Get total sum</Button>
+                                </Col>
+                                <Col sm={2}>
+                                    <Input type="select" name='select_group_sum' id='select_group_sum'>
+                                        {searchByGroup_list}
+                                    </Input>
+                                </Col>  
+                            </Row>
                         </Form>    
                     </Row>
                     <Row>
@@ -350,12 +444,12 @@ const mapStateToProps = state => {
                             } else {
                                 alert("Nothing to print!")
                             }
-                        }}>
+                            }}>
                                 Print results
                         </Button>
                     </Row>
                     <Row>
-                        {/* {searchResult} */}
+                        {searchResult}
                     </Row>
                 </Container>
                 <Footer/>

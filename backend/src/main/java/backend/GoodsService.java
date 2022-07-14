@@ -50,8 +50,8 @@ public class GoodsService {
     public JSONObject create_new_product(JSONObject goods_json) throws SQLException {
         String name = (String) goods_json.get("name");
         String group_name = (String) goods_json.get("group_name");
-        long amount = (long) goods_json.get("amount");
-        double price = (double) goods_json.get("price");
+        int amount = Integer.parseInt(String.valueOf(goods_json.get("amount")));
+        double price = Double.parseDouble(String.valueOf(goods_json.get("price")));
         String about = (String) goods_json.get("about");
         String producer = (String) goods_json.get("producer");
         JSONObject goods_id_json = new JSONObject();

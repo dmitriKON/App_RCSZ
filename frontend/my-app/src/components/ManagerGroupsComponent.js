@@ -1,12 +1,11 @@
 import { Component } from 'react';
 import { Container, Row, Col, Button, Form, Input, Label } from "reactstrap";
 import { connect } from 'react-redux';
-// import html2canvas from "html2canvas";
 
 import Header from './HeaderComponent';
 import Footer from './FooterComponent';
 import ResponseObject from './ResponseObjectComponent';
-import { get_objects_sorted_by, add_object, update_object, delete_object, get_n_of_sold_product } from '../features/shared/axiosRequests';
+import { update_group, delete_group, get_all_groups, create_group } from '../features/shared/axiosRequests';
 import { printResults } from '../features/shared/printUtil';
 
 const mapStateToProps = state => {
@@ -25,113 +24,93 @@ const mapStateToProps = state => {
 
        this.getCategories = this.getCategories.bind(this);
 
-       this.addCategory = this.addCategory.bind(this)
-       this.updateCategory = this.updateCategory.bind(this)
-       this.deleteCategory = this.deleteCategory.bind(this)
+       this.add_category = this.add_category.bind(this);
+       this.update_category = this.update_category.bind(this);
+       this.delete_category = this.delete_category.bind(this);
 
-       this.getNumberOfSoldProductByDates = this.getNumberOfSoldProductByDates.bind(this)
        
-       this.clearSearchResult = this.clearSearchResult.bind(this)
-
-    //    this.handleDownloadImage = this.handleDownloadImage.bind(this)
+       this.clearSearchResult = this.clearSearchResult.bind(this);
     }
 
-    async getCategories (e) {
+    async getCategories() {
+        this.setState({searchResult: await get_all_groups(this.props.jwt)})
+    }
+
+    async add_category(e) {
         e.preventDefault()
-        let res = await get_objects_sorted_by(this.props.jwt, 'Category', 'category_name')
         
-        this.setState({ searchResult: res })
-    }
-
-
-    async addCategory(e) {
-        e.preventDefault()
-        if (!e.target.elements.category_name.value) return
-        let res = await add_object(this.props.jwt, {
-            "obj_data": {
-                "category_name": e.target.elements.category_name.value,
-              },
-              "table_name": "Category"
-        })
-        this.clearSearchResult()
-    }
-
-    async updateCategory(e) {
-        e.preventDefault()
-        if (!e.target.elements.category_number.value || !e.target.elements.category_name.value) return
+        if (!e.target.elements.name.value || !e.target.elements.about.value) {
+            alert('Specify group')
+            return
+        }
         let reqObj = {
-            "filter_data": {
-                "category_number": e.target.elements.category_number.value,
-              },
-            "obj_data": {
-                "category_name": e.target.elements.category_name.value
-              },
-              "table_name": "Category"
+            name: e.target.elements.name.value ,
+            about: e.target.elements.about.value 
         }
 
-        let res = await update_object(this.props.jwt, reqObj)
+        let res = await create_group(this.props.jwt, reqObj)
+
         this.clearSearchResult()
     }
 
-    async deleteCategory(e) {
+    async update_category(e) {
         e.preventDefault()
-        if (!e.target.elements.category_number.value) return
-        let res = await delete_object(this.props.jwt, {
-            "filter_data": {
-              "category_number": e.target.elements.category_number.value
-            },
-            "table_name": "Category"
-        })
+        if (!e.target.elements.name.value || !e.target.elements.about.value ) {
+            alert('Specify group')
+            return
+        }
+        let reqObj = {
+            name: e.target.elements.name.value,
+            about: e.target.elements.about.value 
+        }
+
+        let res = await update_group(this.props.jwt, reqObj)
+
         this.clearSearchResult()
     }
 
-    async getNumberOfSoldProductByDates(e) {
+    async delete_category(e) {
         e.preventDefault()
-        if (!e.target.elements.fromDay.value || !e.target.elements.fromMonth.value || !e.target.elements.fromYear.value
-             || !e.target.elements.toDay.value || !e.target.elements.toMonth.value || !e.target.elements.toYear.value || !e.target.elements.searchProductByUPC.value) return
+        if (!e.target.elements.name.value) {
+            alert('Specify group')
+            return
+        }
+        let reqObj = {
+            name: e.target.elements.name.value
+        }
 
-        let res = await get_n_of_sold_product(this.props.jwt, e.target.elements.searchProductByUPC.value, `${e.target.elements.fromYear.value}-${e.target.elements.fromMonth.value}-${e.target.elements.fromDay.value}`,
-        `${e.target.elements.toYear.value}-${e.target.elements.toMonth.value}-${e.target.elements.toDay.value}`)
+        let res = await delete_group(this.props.jwt, reqObj)
 
-
-        this.setState({ searchTypeDisplayed: 'number', searchNumberOfSoldProductResult: res  })
+        this.clearSearchResult()
     }
 
     clearSearchResult() {
         this.setState({
-            searchResult: null})
+            searchResult: null
+        })
     }
 
-    // async handleDownloadImage () {
-    //     // const element = (this.state.searchTypeDisplayed === 'upc') ? document.getElementById('print2') : document.getElementById('print1'),
-    //     const element =  document.getElementById("result"),
-    //     canvas = await html2canvas([element]),
-    //     data = canvas.toDataURL('image/jpg'),
-    //     link = document.createElement('a');
-     
-    //     link.href = data;
-    //     link.download = 'downloaded-image.jpg';
-     
-    //     document.body.appendChild(link);
-    //     link.click();
-    //     document.body.removeChild(link);
-    //   };
-
     render() {
-        let searchResult = (this.state.searchResult) ?
+        let searchResult_element = (this.state.searchResult) ?
             <>
                 {this.state.searchResult.map(el => 
-                    <ResponseObject obj={el} title='category_name'/>
+                    <ResponseObject obj={el} title='name'/>
                 )}              
             </> : <></>
         
         let addCategoryForm = 
-        <Form onSubmit={e => this.addCategory(e)}>
+        <Form onSubmit={e => this.add_category(e)}>
             <Container style={{'border': '1px solid black', 'padding': '20px', 'marginTop': '1vh', 'borderRadius': '5px', 'width': '99%'}}> 
                 <Row>
-                    <Label htmlFor='category_name' sm={3}>category_name</Label>
+                    <Label htmlFor='name' sm={3}>name</Label>
                     <Col sm={9}>
-                        <Input name='category_name' id='category_name'></Input>
+                        <Input name='name' id='name'></Input>
+                    </Col>
+                </Row>
+                <Row>
+                    <Label htmlFor='about' sm={3}>about</Label>
+                    <Col sm={9}>
+                        <Input name='about' id='about'></Input>
                     </Col>
                 </Row>
                 <Row>
@@ -141,18 +120,18 @@ const mapStateToProps = state => {
         </Form>
         
         let updateCategoryForm = 
-        <Form onSubmit={e => this.updateCategory(e)}>
+        <Form onSubmit={e => this.update_category(e)}>
             <Container style={{'border': '1px solid black', 'padding': '20px', 'marginTop': '1vh', 'borderRadius': '5px', 'width': '99%'}}>
                 <Row>
-                    <Label htmlFor='category_number' sm={3}>category_number</Label>
+                    <Label htmlFor='name' sm={3}>name</Label>
                     <Col sm={9}>
-                        <Input name='category_number' id='category_number'></Input>
+                        <Input name='name' id='name'></Input>
                     </Col>
                 </Row>
                 <Row>
-                    <Label htmlFor='category_name' sm={3}>category_name</Label>
+                    <Label htmlFor='about' sm={3}>about</Label>
                     <Col sm={9}>
-                        <Input name='category_name' id='category_name'></Input>
+                        <Input name='about' id='about'></Input>
                     </Col>
                 </Row>
                 <Row>
@@ -162,12 +141,12 @@ const mapStateToProps = state => {
         </Form>
         
         let deleteCategoryForm = 
-        <Form onSubmit={e => this.deleteCategory(e)}>
+        <Form onSubmit={e => this.delete_category(e)}>
             <Container style={{'border': '1px solid black', 'padding': '20px', 'marginTop': '1vh', 'borderRadius': '5px', 'width': '99%'}}> 
                 <Row>
-                    <Label htmlFor='category_number' sm={3}>category_number</Label>
+                    <Label htmlFor='name' sm={3}>name</Label>
                     <Col sm={9}>
-                        <Input name='category_number' id='category_number'></Input>
+                        <Input name='name' id='name'></Input>
                     </Col>
                 </Row>
                 <Row>
@@ -181,19 +160,15 @@ const mapStateToProps = state => {
                 <Header/>
                 <Container>
                     <Row style={{ "marginBottom": "15px" }}>
-                        <Form onSubmit={e => this.getCategories(e)}>
-                            <Row>
-                                <Col sm={1}></Col>
-                                <Col sm={2} >
-                                    <Button onClick={this.clearSearchResult} color="warning">Clear</Button>
-                                </Col> 
-                                <Col sm={6} style={{'textAlign': 'center'}}>
-                                    <Button size='lg' type='submit' block>Get categories</Button>
-                                </Col>
-                                <Col sm={2}>
-                                </Col>                            
-                            </Row>
-                        </Form> 
+                        <Col sm={1}></Col>
+                        <Col sm={2} >
+                            <Button onClick={this.clearSearchResult} color="warning">Clear</Button>
+                        </Col> 
+                        <Col sm={6} style={{'textAlign': 'center'}} onClick={this.getCategories}>
+                            <Button size='lg' type='submit' block>Get categories</Button>
+                        </Col>
+                        <Col sm={2}>
+                        </Col>
                     </Row>
 
                     <Row>
@@ -219,11 +194,8 @@ const mapStateToProps = state => {
                         </Button>
                     </Row>
                     <Row id='result1'>
-                        {searchResult}
+                        {searchResult_element}
                     </Row>
-                    {/* <Row>
-                        <Button onClick={this.handleDownloadImage}>Save</Button>
-                    </Row> */}
                 </Container>
                 <Footer/>
             </div>
