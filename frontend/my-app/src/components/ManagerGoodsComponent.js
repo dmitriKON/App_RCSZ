@@ -180,8 +180,12 @@ const mapStateToProps = state => {
             goodList: await get_all_products(this.props.jwt),
             groupList: await get_all_groups(this.props.jwt),
 
+            goodByGroupList: [],
+
             goodByName_result: null,
             goodsByGroup_result: null,
+
+            totalSum_result: null,
         })
     }
 
@@ -209,7 +213,17 @@ const mapStateToProps = state => {
         let searchByGroupElement = (this.state.goodByGroupList) ? (
             <>
                 {this.state.goodByGroupList.map(el => 
-                    <ResponseObject obj={el} title='goods_name'/>
+                    <Row style={{'border':'1px solid black'}}>
+                        <ResponseObject obj={el} title='goods_name' sm={9} border='0px'/>
+                        <Col sm={2} style={{"textAlign":"center"}}>
+                            <Form onSubmit={(e, name) => this.buySaleGood(e, el.goods_name)}>
+                                <br/><br/><br/><br/>
+                                <h2>+ buy/sale -</h2>
+                                <Input type='number' name='buySaleAmount' id='buySaleAmount'/>
+                                <Button type='submit' style={{'marginTop':'1vh'}}>Save</Button>
+                            </Form>                        
+                        </Col>
+                    </Row>
                 )}              
             </>
  
@@ -306,7 +320,7 @@ const mapStateToProps = state => {
         let updateGoodForm = 
         <Form onSubmit={e => this.updateGood(e)}>
             <Container style={{'border': '1px solid black', 'padding': '20px', 'marginTop': '1vh', 'borderRadius': '5px', 'width': '99%'}}> 
-            <Row>
+                <Row>
                     <Label htmlFor='name' sm={3} style={{'color': 'red'}}>name</Label>
                     <Col sm={9}>
                         <Input name='name' id='name'></Input>
@@ -341,9 +355,12 @@ const mapStateToProps = state => {
                     <Col sm={9}>
                         <Input type="select" name='groupName' id='groupName'>
                             {
-                                this.state.groupList.map(
-                                    obj => <option value={obj.name}>{obj.name}</option>
-                                )
+                                <>
+                                    <option disabled selected value={''}>select an option</option>
+                                    {this.state.groupList.map(
+                                        obj => <option value={obj.name}>{obj.name}</option>
+                                    )}
+                                </>
                             }
                         </Input>
                     </Col>

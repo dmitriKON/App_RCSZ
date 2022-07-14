@@ -70,7 +70,7 @@ public class GoodsService {
             }
         }
         if (goods_json.containsKey("price")) {
-            double price = (double) goods_json.get("price");
+            double price = Double.parseDouble(String.valueOf(goods_json.get("price")));
             if (goods.getPrice() != price) {
                 db.set_product_price_by_name(price, name);
             }

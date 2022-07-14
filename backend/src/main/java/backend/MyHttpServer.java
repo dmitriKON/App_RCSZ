@@ -80,14 +80,11 @@ public class MyHttpServer {
                             in = exchange.getRequestBody();
                             goods = (JSONObject) json_parser.parse(new InputStreamReader(in, StandardCharsets.UTF_8));
 
-                            System.out.println("000");
                             if (!validate_goods(goods, method)) {
                                 send_response("409: Conflict - your data contains errors", 409, exchange);
                                 return;
                             }
-                            System.out.println("111");
                             JSONObject goods_id = goods_service.create_new_product(goods);
-                            System.out.println("222");
                             send_response(goods_id.toJSONString(), 201, exchange);
                             return;
                         case "POST":
@@ -146,6 +143,7 @@ public class MyHttpServer {
             }
             if(path.startsWith("/api/group")){
                 String[] splitted_path = path.split("/");
+                System.out.println(splitted_path[3]);
                 String group_name = "";
                 if (splitted_path.length > 3) {
                     try {
@@ -154,6 +152,7 @@ public class MyHttpServer {
                         send_response("404: Resource not found", 404, exchange);
                         return;
                     }
+                    System.out.println(group_name + " !!!!!!!!!!!!!!!!!!");
                 }
                 try {
                     switch (method) {
@@ -229,8 +228,8 @@ public class MyHttpServer {
                             goods.containsKey("about") &&
                             goods.containsKey("producer") &&
                             (!goods.get("group_name").equals("")) &&
-                            ((long) goods.get("amount") >= 0) &&
-                            ((double) goods.get("price") > 0) &&
+                            (Integer.parseInt(String.valueOf(goods.get("amount"))) >= 0) &&
+                            (Double.parseDouble(String.valueOf(goods.get("price"))) > 0) &&
                             (!goods.get("producer").equals(""))
                     )
                     {
@@ -241,10 +240,10 @@ public class MyHttpServer {
                     if (goods.containsKey("group_name") && (goods.get("group_name").equals(""))){
                         return false;
                     }
-                    if (goods.containsKey("amount") && ((long) goods.get("amount") <= 0)){
+                    if (goods.containsKey("amount") && (Integer.parseInt(String.valueOf(goods.get("amount"))) <= 0)){
                         return false;
                     }
-                    if (goods.containsKey("price") && ((double) goods.get("price") <= 0)){
+                    if (goods.containsKey("price") && (Double.parseDouble(String.valueOf(goods.get("price"))) <= 0)){
                         return false;
                     }
                     if (goods.containsKey("producer") && (goods.get("producer").equals(""))){
