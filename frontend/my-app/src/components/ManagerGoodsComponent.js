@@ -104,9 +104,6 @@ const mapStateToProps = state => {
         if(e.target.elements.groupName.value) reqObj.group_name = e.target.elements.groupName.value; else { alert('Specify good'); return }
 
         await create_product(this.props.jwt, reqObj)
-        .then(() => {
-            alert(`${reqObj.name} has been created.`)
-        })
 
         this.clearSearchResult()
     }
@@ -128,9 +125,6 @@ const mapStateToProps = state => {
         if(e.target.elements.groupName.value) reqObj.group_name = e.target.elements.groupName.value;
 
         await update_product(this.props.jwt, reqObj)
-        .then(() => {
-            alert(`${reqObj.name} has been updated.`)
-        })
         this.clearSearchResult()
     }
 
@@ -142,9 +136,6 @@ const mapStateToProps = state => {
         }
         
         await delete_product(this.props.jwt,  e.target.elements.name.value)
-        .then(() => {
-            alert(`${e.target.elements.name.value} has been deleted.`)
-        })
         this.clearSearchResult()
     }
 

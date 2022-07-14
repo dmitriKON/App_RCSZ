@@ -57,9 +57,6 @@ const mapStateToProps = state => {
         }
 
         await create_group(this.props.jwt, reqObj)
-        .then(() => {
-            alert(`${reqObj.name} has been created.`)
-        })
 
         this.clearSearchResult()
     }
@@ -76,9 +73,6 @@ const mapStateToProps = state => {
         }
 
         await update_group(this.props.jwt, reqObj)
-        .then(() => {
-            alert(`${reqObj.name} has been updated.`)
-        })
 
         this.clearSearchResult()
     }
@@ -91,9 +85,6 @@ const mapStateToProps = state => {
         }
 
         await delete_group(this.props.jwt, e.target.elements.name.value)
-        .then(() => {
-            alert(`${e.target.elements.name.value} has been deleted.`)
-        })
 
         this.clearSearchResult()
     }

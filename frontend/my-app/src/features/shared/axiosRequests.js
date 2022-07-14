@@ -11,11 +11,12 @@ export const get_product_by_name = async(jwt, name) => {
          headers : {
             Authorization : `Bearer ${jwt}`,
          }
-      });
+      })
       console.log(response.data)
       return response.data;
    } catch (err) {
       console.log('ERROR get_product_by_name', err.message);
+      alert(err.message)
    }
 }
 
@@ -28,9 +29,13 @@ export const update_product = async(jwt, body) => {
          headers : {
             Authorization : `Bearer ${jwt}`,
          }
+      })
+      .then(() => {
+          alert(`${body.name} has been updated.`)
       });
    } catch (err) {
       console.log('ERROR update_product', err.message);
+      alert(err.message)
    }
 }
 
@@ -48,6 +53,7 @@ export const get_all_products = async(jwt) => {
       return response.data.result;
    } catch (err) {
       console.log('ERROR get_product_by_name', err.message);
+      alert(err.message)
    }
 }
 
@@ -65,6 +71,7 @@ export const get_all_groups = async(jwt) => {
       return response.data.result;
    } catch (err) {
       console.log('ERROR get_product_by_name', err.message);
+      alert(err.message)
    }
 }
 
@@ -77,11 +84,15 @@ export const delete_product = async(jwt, name) => {
          headers : {
             Authorization : `Bearer ${jwt}`,
          }
+      })
+      .then(() => {
+          alert(`${name} has been deleted.`)
       });
       console.log(response.data)
       return response.data;
    } catch (err) {
       console.log('ERROR delete_product', err.message);
+      alert(err.message)
    }
 }
 
@@ -94,9 +105,13 @@ export const create_product = async(jwt, body) => {
          headers : {
             Authorization : `Bearer ${jwt}`,
          }
+      })
+      .then(() => {
+          alert(`${body.name} has been created.`)
       });
    } catch (err) {
       console.log('ERROR create_product', err.message);
+      alert(err.message)
    }
 }
 
@@ -109,9 +124,13 @@ export const update_group = async(jwt, body) => {
          headers : {
             Authorization : `Bearer ${jwt}`,
          }
+      })
+      .then(() => {
+         alert(`${body.name} has been updated.`)
       });
    } catch (err) {
       console.log('ERROR update_group', err.message);
+      alert(err.message)
    }
 }
 
@@ -124,11 +143,15 @@ export const delete_group = async(jwt, name) => {
          headers : {
             Authorization : `Bearer ${jwt}`,
          }
+      })
+      .then(() => {
+          alert(`${name} has been deleted.`)
       });
-      console.log(response.data)
-      return response.data;
+      console.log(response)
+      return response;
    } catch (err) {
       console.log('ERROR delete_group', err.message);
+      alert(err.message)
    }
 }
 
@@ -141,8 +164,12 @@ export const create_group = async(jwt, body) => {
          headers : {
             Authorization : `Bearer ${jwt}`,
          }
+      })
+      .then(() => {
+          alert(`${body.name} has been created.`)
       });
    } catch (err) {
       console.log('ERROR create_group', err.message);
+      alert(err.message)
    }
 }
