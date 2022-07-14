@@ -303,10 +303,10 @@ const mapStateToProps = state => {
                     <Label htmlFor='groupName' sm={3}>group name</Label>
                     <Col sm={9}>
                         <Input type="select" name='groupName' id='groupName'>
-                            {
+                            {   (this.state.groupList) ?
                                 this.state.groupList.map(
                                     obj => <option value={obj.name}>{obj.name}</option>
-                                )
+                                ) : <></>
                             }
                         </Input>
                     </Col>
@@ -357,9 +357,12 @@ const mapStateToProps = state => {
                             {
                                 <>
                                     <option disabled selected value={''}>select an option</option>
-                                    {this.state.groupList.map(
+                                    { 
+                                    (this.state.groupList) ?
+                                    this.state.groupList.map(
                                         obj => <option value={obj.name}>{obj.name}</option>
-                                    )}
+                                    ) : <></>
+                                }
                                 </>
                             }
                         </Input>
