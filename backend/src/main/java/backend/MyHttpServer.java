@@ -6,12 +6,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import javax.net.ssl.*;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.Objects;
@@ -30,7 +29,6 @@ public class MyHttpServer {
     public static void main(String[] args) throws Exception {
         HttpServer server = HttpServer.create();
         server.bind(new InetSocketAddress(PORT), 0);
-
         HttpContext context = server.createContext("/", new RequestHandler());
         context.setAuthenticator(new Auth());
         server.setExecutor(Executors.newCachedThreadPool());
