@@ -143,7 +143,6 @@ public class MyHttpServer {
             }
             if(path.startsWith("/api/group")){
                 String[] splitted_path = path.split("/");
-                System.out.println(splitted_path[3]);
                 String group_name = "";
                 if (splitted_path.length > 3) {
                     try {
@@ -152,7 +151,6 @@ public class MyHttpServer {
                         send_response("404: Resource not found", 404, exchange);
                         return;
                     }
-                    System.out.println(group_name + " !!!!!!!!!!!!!!!!!!");
                 }
                 try {
                     switch (method) {

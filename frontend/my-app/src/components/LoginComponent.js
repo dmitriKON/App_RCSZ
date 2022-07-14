@@ -15,7 +15,14 @@ class Login extends Component {
 
     async handleSubmit(e) {
         e.preventDefault()
-        await axios.post(requestUrl + 'login', {username: e.target.elements.phone_number.value, password: e.target.elements.password.value})
+        if (!e.target.elements.username.value) {
+            alert('Enter username')
+            return
+        } else if (!e.target.elements.password.value) {
+            alert('Enter password')
+            return
+        }
+        await axios.post(requestUrl + 'login', {username: e.target.elements.username.value, password: e.target.elements.password.value})
         .then((response) => {
             this.props.changeJwt(response.data.jwt)
         })
@@ -27,9 +34,9 @@ class Login extends Component {
             <div className="container loginContainer">
                 <Form onSubmit={e => this.handleSubmit(e)}>
                     <Row className="form-group">
-                        <Label htmlFor="phone_number" md={2}>Phone Number</Label>
+                        <Label htmlFor="username" md={2}>Phone Number</Label>
                         <Col md={10}>
-                            <Input name="phone_number" id="phone_number" />
+                            <Input name="username" id="username" />
                         </Col>
                     </Row>
                     <Row className="form-group">

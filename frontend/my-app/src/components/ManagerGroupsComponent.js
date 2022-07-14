@@ -75,11 +75,8 @@ const mapStateToProps = state => {
             alert('Specify group')
             return
         }
-        let reqObj = {
-            name: e.target.elements.name.value
-        }
 
-        let res = await delete_group(this.props.jwt, reqObj)
+        await delete_group(this.props.jwt, e.target.elements.name.value)
 
         this.clearSearchResult()
     }
