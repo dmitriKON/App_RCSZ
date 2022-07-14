@@ -27,6 +27,7 @@
 .header {
   background-color: #063f0d;
   max-width: 100%;
+  padding: 16px 0 16px 0;
   color:aliceblue;
 }
 
@@ -43,13 +44,14 @@ html {
 }
 
 .homeCategoryBtn {
-  width: 40vh;
-  height: 30vh;
+  width: 60vh;
+  height: 60vh;
   border: 0px;
   background-color: #f5fff7;
   color: #0e3f15;
   font-size: large;
-  margin-top: 2em;
+  margin-top: 3em;
+  margin-bottom: 3em;
 }
 
 .homeCategoryBtn:hover {
@@ -59,9 +61,8 @@ html {
 }
 
 .colHomeCategoryButton {
-  text-align: right
+  text-align: right;
 }
-
 
 @media (max-width: 992px) { 
   .homeCategoryBtn {
@@ -77,10 +78,6 @@ html {
 
  }
 
-/* .responseObject {
-  border: 1px solid #063f0d;
-} */
-
 .footer {
   width: 100%;
   background-color: #063f0d;
@@ -90,8 +87,6 @@ html {
   padding-top: 2em;
   padding-bottom: 2em;
   margin-top: 3em;
-  /* position:absolute;
-  bottom:0; */
 }
 
 #headerLogo {
@@ -102,3 +97,12 @@ html {
 }
 
 .html2canvas-container { width: 3000px !important; height: 3000px !important; }
+
+.breadcrumb {
+  font-size: 20px;
+  margin-top: 2vh;
+
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}

@@ -3,10 +3,6 @@ import { Container, Row, Col } from "reactstrap";
 import HomeCategoryButton from './HomeCategoryButtonComponent';
 
 class ManagerHome extends Component {
-    constructor(props) {
-       super(props);
-    }
-
     render() {
         return (
             <Container>
