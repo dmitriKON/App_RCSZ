@@ -66,12 +66,12 @@ const mapStateToProps = state => {
 
     async update_category(e) {
         e.preventDefault()
-        if (!e.target.elements.name.value || !e.target.elements.about.value ) {
+        if (!e.target.elements.name_update.value || !e.target.elements.about.value ) {
             alert('Specify group')
             return
         }
         let reqObj = {
-            name: e.target.elements.name.value,
+            name: e.target.elements.name_update.value,
             about: e.target.elements.about.value 
         }
 
@@ -138,9 +138,15 @@ const mapStateToProps = state => {
         <Form onSubmit={e => this.update_category(e)}>
             <Container style={{'border': '1px solid black', 'padding': '20px', 'marginTop': '1vh', 'borderRadius': '5px', 'width': '99%'}}>
                 <Row>
-                    <Label htmlFor='name' sm={3}>name</Label>
+                    <Label htmlFor='name_update' sm={3}>name</Label>
                     <Col sm={9}>
-                        <Input name='name' id='name'></Input>
+                        <Input type="select" name='name_update' id='name_update'>
+                            {
+                                this.state.groupList.map(
+                                    obj => <option value={obj.name}>{obj.name}</option>
+                                )
+                            }
+                        </Input>
                     </Col>
                 </Row>
                 <Row>
