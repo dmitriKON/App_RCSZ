@@ -27,7 +27,7 @@ public class MyHttpClient {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(json))
-                .uri(URI.create("http://localhost:4758/login"))
+                .uri(URI.create("https://localhost:4758/login"))
                 .setHeader("User-Agent", "Java 11 HttpClient Bot")
                 .header("Content-Type", "application/json")
                 .build();

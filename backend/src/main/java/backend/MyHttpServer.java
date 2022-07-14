@@ -18,6 +18,8 @@ import java.util.concurrent.Executors;
 
 public class MyHttpServer {
 
+    public static HttpsServer server;
+    public static HttpServer http_server;
     public static final String DATABASE_NAME = "storeDB";
     static DatabaseManager database_manager = new DatabaseManager(DATABASE_NAME);
     static GoodsService goods_service = new GoodsService(database_manager);
@@ -27,7 +29,21 @@ public class MyHttpServer {
     public static final int PORT = 5000;
 
     public static void main(String[] args) throws Exception {
-        HttpsServer server = HttpsServer.create();
+        start();
+    }
+
+    public static void start_http() throws Exception {
+        http_server = HttpServer.create();
+        http_server.bind(new InetSocketAddress(PORT), 0);
+        HttpContext context = http_server.createContext("/", new RequestHandler());
+        context.setAuthenticator(new Auth());
+        http_server.setExecutor(Executors.newFixedThreadPool(8));
+        http_server.start();
+        System.out.println("Sever started on "+ PORT + " port...");
+    }
+
+    public static void start() throws Exception {
+        server = HttpsServer.create();
         server.bind(new InetSocketAddress(PORT), 0);
 
         SSLContext sslContext = SSLContext.getInstance("TLS");
@@ -58,11 +74,18 @@ public class MyHttpServer {
 
         HttpContext context = server.createContext("/", new RequestHandler());
         context.setAuthenticator(new Auth());
-        server.setExecutor(Executors.newCachedThreadPool());
+        server.setExecutor(Executors.newFixedThreadPool(8));
         server.start();
         System.out.println("Sever started on "+ PORT + " port...");
     }
 
+    public static void finish() throws Exception {
+        server.stop(1);
+    }
+
+    public static void finish_http() throws Exception {
+        http_server.stop(1);
+    }
 
     static class RequestHandler implements HttpHandler {
 
